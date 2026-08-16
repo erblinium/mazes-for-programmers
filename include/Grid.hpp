@@ -6,6 +6,8 @@
 #include <memory>
 #include <random>
 #include <vector>
+#include <format>
+#include <sstream>
 
 class Grid
 {
@@ -76,19 +78,34 @@ public:
     }
 
     template <typename F>
-    void eachCell(F&& fn) {
-        for (auto& row : mGrid) {
-            for (auto& cell : row) {
+    void eachCell(F&& fn)
+    {
+        for (auto& row : mGrid)
+        {
+            for (auto& cell : row)
+            {
                 fn(*cell);
             }
         }
     }
 
     template <typename F>
-    void eachRow(F&& fn) {
-        for (auto& row : mGrid) {
+    void eachRow(F&& fn)
+    {
+        for (auto& row : mGrid)
+        {
             fn(row);
         }
+    }
+
+    uint32_t getRows() const
+    {
+        return mRows;
+    }
+
+    uint32_t getColumns() const
+    {
+        return mColumns;
     }
 
 private:
@@ -97,3 +114,71 @@ private:
 
     std::vector<std::vector<std::unique_ptr<Cell>>> mGrid;
 };
+
+std::ostream& operator<<(std::ostream& os, Grid& p)
+{
+    os << "+";
+    for (uint32_t columns = 0; columns < p.getColumns(); columns += 1)
+    {
+        os << "---+";
+    }
+    os << '\n';
+
+    p.eachRow([&os](std::vector<std::unique_ptr<Cell>>& row) 
+    {
+        std::ostringstream top;
+        top << "|";
+        std::ostringstream bottom;
+        bottom << "+";
+
+        for (auto& cell : row)
+        {
+            if (!cell)
+            {
+                cell = std::make_unique<Cell>(-1, -1);
+            }
+
+            std::string body = "   "; // THREE (3) spaces
+            auto east = cell->getEast();
+            if (east && cell->linked(*east))
+            {
+                top << body << " ";
+            }
+            else
+            {
+                top << body << "|";
+            }
+
+            auto south = cell->getSouth();
+            if (south && cell->linked(*south))
+            {
+                bottom << "   " << "+";
+            }
+            else
+            {
+                bottom << "---" << "+";
+            }
+        }
+
+        os << top.str() << '\n';
+        os << bottom.str() << '\n';
+    });
+
+    return os;
+}
+
+/* 
+
+#include <print>
+template<>
+struct std::formatter<Grid> : std::formatter<std::string>
+{
+    auto format(const Grid& grid, format_context& ctx) const
+    {
+        std::string output = "+" + "---+" * grid.columns ? `\n`;
+        return std::formatter<std::string>::format(
+            output,
+            ctx
+        );
+    }
+} */

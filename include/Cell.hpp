@@ -95,22 +95,22 @@ public:
         return neighbors;
     }
 
-    Cell* getNorth()
+    Cell* getNorth() const
     {
         return mNorth;
     }
 
-    Cell* getSouth()
+    Cell* getSouth() const
     {
         return mSouth;
     }
 
-    Cell* getWest()
+    Cell* getWest() const
     {
         return mWest;
     }
 
-    Cell* getEast()
+    Cell* getEast() const
     {
         return mEast;
     }
@@ -146,5 +146,5 @@ private:
     uint32_t mColumn;
     uint64_t mKey;
 
-    std::unordered_map<uint32_t, Cell*> mLinks;
+    std::unordered_map<uint64_t, Cell*> mLinks;
 };
