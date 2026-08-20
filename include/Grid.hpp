@@ -1,5 +1,7 @@
 #pragma once
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "Cell.hpp"
 
 #include <cstdint>
@@ -8,6 +10,8 @@
 #include <vector>
 #include <format>
 #include <sstream>
+
+#include "stb/stb_image_write.h"
 
 class Grid
 {
@@ -126,27 +130,21 @@ std::ostream& operator<<(std::ostream& os, Grid& p)
 
     p.eachRow([&os](std::vector<std::unique_ptr<Cell>>& row) 
     {
-        std::ostringstream top;
-        top << "|";
+        os << "|";
         std::ostringstream bottom;
         bottom << "+";
 
         for (auto& cell : row)
         {
-            if (!cell)
-            {
-                cell = std::make_unique<Cell>(-1, -1);
-            }
-
-            std::string body = "   "; // THREE (3) spaces
+            os << "   "; // THREE (3) spaces
             auto east = cell->getEast();
             if (east && cell->linked(*east))
             {
-                top << body << " ";
+                os << " ";
             }
             else
             {
-                top << body << "|";
+                os << "|";
             }
 
             auto south = cell->getSouth();
@@ -160,7 +158,7 @@ std::ostream& operator<<(std::ostream& os, Grid& p)
             }
         }
 
-        os << top.str() << '\n';
+        os << '\n';
         os << bottom.str() << '\n';
     });
 
