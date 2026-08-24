@@ -7,11 +7,14 @@ int main(int argc, char* argv[])
 {
     Grid binaryTreeGrid(5, 5);
     BinaryTree::on(binaryTreeGrid);
+    binaryTreeGrid.savePng(10, "maze-binary-grid.png", 2);
     std::cout << "Binary Tree:\n";
     std::cout << binaryTreeGrid;
+
     std::cout << "Sidewinder:\n";
     Grid sidewinderGrid(5, 5);
     Sidewinder::on(sidewinderGrid);
-    std::cout << sidewinderGrid;
+    sidewinderGrid.savePng(10, "maze-sidewinder-grid.png", 2);
+    std::cout << sidewinderGrid; 
     return 0;
 }

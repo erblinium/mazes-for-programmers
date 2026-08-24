@@ -112,6 +112,102 @@ public:
         return mColumns;
     }
 
+    void savePng(const int cellSizeInPixels, const std::string& filename, const int lineBorderSizeInPixels = 2)
+    {
+        const int width = getColumns() * cellSizeInPixels + lineBorderSizeInPixels * (getColumns() + 1);
+        const int height = getRows() * cellSizeInPixels + lineBorderSizeInPixels * (getRows() + 1);
+
+        std::vector<unsigned char> pixels(width * height * 3, 255);
+
+        auto setPixel = [&](int x, int y, unsigned char r,
+                        unsigned char g, unsigned char b)
+        {
+            if (x < 0 || x >= width || y < 0 || y >= height)
+                return;
+
+            auto index = (y * width + x) * 3;
+
+            pixels[index + 0] = r;
+            pixels[index + 1] = g;
+            pixels[index + 2] = b;
+        };
+
+        auto drawHorizontalLine = [&](int x1, int x2, int y)
+        {
+            for (int x = x1; x <= x2; ++x)
+            {
+                for (int thickness = 0;
+                    thickness < lineBorderSizeInPixels;
+                    ++thickness)
+                {
+                    setPixel(x, y + thickness, 0, 0, 0);
+                }
+            }
+        };
+
+        auto drawVerticalLine = [&](int y1, int y2, int x)
+        {
+            for (int y = y1; y <= y2; ++y)
+            {
+                for (int thickness = 0;
+                    thickness < lineBorderSizeInPixels;
+                    ++thickness)
+                {
+                    setPixel(x + thickness, y, 0, 0, 0);
+                }
+            }
+        };
+
+        const int cellSizePlusBorderThickness = cellSizeInPixels + lineBorderSizeInPixels;
+
+        eachCell([&](Cell& cell)
+        {
+            const int x1 = cell.column() * cellSizePlusBorderThickness;
+            const int y1 = cell.row() * cellSizePlusBorderThickness;
+
+            const int x2 = x1 + cellSizePlusBorderThickness;
+            const int y2 = y1 + cellSizePlusBorderThickness;
+
+            auto north = cell.getNorth();
+            auto south = cell.getSouth();
+            auto east = cell.getEast();
+            auto west = cell.getWest();
+
+            // North wall
+            if (!north || !cell.linked(*north))
+            {
+                drawHorizontalLine(x1, x2, y1);
+            }
+
+            // South wall
+            if (!south || !cell.linked(*south))
+            {
+                drawHorizontalLine(x1, x2+1, y2);
+            }
+
+            // West wall
+            if (!west || !cell.linked(*west))
+            {
+                drawVerticalLine(y1, y2, x1);
+            }
+
+            // East wall
+            if (!east || !cell.linked(*east))
+            {
+                drawVerticalLine(y1, y2, x2);
+            }
+        });
+
+        stbi_write_png(
+            filename.c_str(),
+            width,
+            height,
+            3,
+            pixels.data(),
+            width * 3
+        );
+    }
+
 private:
     uint32_t mRows = 0;
     uint32_t mColumns = 0;
