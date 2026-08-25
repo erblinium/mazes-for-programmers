@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Grid.hpp"
+#include "BitfieldGrid.hpp"
 
 class BinaryTree
 {
@@ -35,6 +36,46 @@ class BinaryTree
                 Cell* neighbor = neighbors[distribution(generator)];
 
                 cell.link(*neighbor);
+            });
+        }
+
+        static void on(BitfieldGrid& grid)
+        {
+            static std::mt19937 generator(std::random_device{}());
+
+            grid.eachCell([&](std::uint8_t cell, const std::size_t row, const std::size_t column)
+            {
+                uint8_t neighbours = 0;
+
+                const auto canLinkSouth = grid.hasSouthernNeighbour(row);
+                const auto canLinkEast = grid.hasEasternNeighbour(column);
+
+                if (!canLinkEast && !canLinkSouth)
+                {
+                    return;
+                }
+
+                if (canLinkEast && canLinkSouth)
+                {
+                    std::uniform_int_distribution<std::size_t> distribution(0, 1);
+
+                    if(distribution(generator) == 0)
+                    {
+                        grid.linkEast(row, column);
+                    }
+                    else
+                    {
+                        grid.linkSouth(row, column);
+                    }
+                }
+                else if(canLinkEast)
+                {
+                    grid.linkEast(row, column);
+                }
+                else if(canLinkSouth)
+                {
+                    grid.linkSouth(row, column);
+                }
             });
         }
 };
