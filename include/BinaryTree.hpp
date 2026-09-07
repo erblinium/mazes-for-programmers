@@ -2,6 +2,7 @@
 
 #include "Grid.hpp"
 #include "BitfieldGrid.hpp"
+#include "NodeGrid.hpp"
 
 class BinaryTree
 {
@@ -75,6 +76,43 @@ class BinaryTree
                 else if(canLinkSouth)
                 {
                     grid.linkSouth(row, column);
+                }
+            });
+        }
+
+        static void on(NodeGrid& grid)
+        {
+            static std::mt19937 generator(std::random_device{}());
+            grid.eachCell([&](std::size_t node, const uint32_t row, const uint32_t column)
+            {
+                const auto canLinkSouth = row < grid.getRows() - 1;
+                const auto canLinkEast = column < grid.getColumns() - 1;
+
+                if (!canLinkEast && !canLinkSouth)
+                {
+                    return;
+                }
+
+                if (canLinkEast && canLinkSouth)
+                {
+                    std::uniform_int_distribution<std::size_t> distribution(0, 1);
+
+                    if(distribution(generator) == 0)
+                    {
+                        grid.linkEast(node);
+                    }
+                    else
+                    {
+                        grid.linkSouth(node);
+                    }
+                }
+                else if(canLinkEast)
+                {
+                    grid.linkEast(node);
+                }
+                else if(canLinkSouth)
+                {
+                    grid.linkSouth(node);
                 }
             });
         }
