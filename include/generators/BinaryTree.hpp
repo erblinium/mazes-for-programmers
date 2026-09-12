@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Grid.hpp"
-#include "BitfieldGrid.hpp"
-#include "NodeGrid.hpp"
+#include "grids/Grid.hpp"
+#include "grids/BitfieldGrid.hpp"
+#include "grids/NodeGrid.hpp"
 
 class BinaryTree
 {

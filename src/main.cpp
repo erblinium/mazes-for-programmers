@@ -1,5 +1,5 @@
-#include "BinaryTree.hpp"
-#include "Sidewinder.hpp"
+#include "generators/BinaryTree.hpp"
+#include "generators/Sidewinder.hpp"
 #include <iostream>
 
 int main(int argc, char* argv[])
