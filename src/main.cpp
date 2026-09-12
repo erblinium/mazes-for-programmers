@@ -21,6 +21,12 @@ int main(int argc, char* argv[])
     //binaryTreeBitfieldGrid.savePng(10, "maze-binary-grid.png", 2);
     std::cout << "Binary Tree BitfieldGrid:\n";
     std::cout << binaryTreeBitfieldGrid;
+    
+    BitfieldGrid sidewinderBitfieldGrid(5, 5);
+    Sidewinder::on(sidewinderBitfieldGrid);
+    //sidewinderBitfieldGrid.savePng(10, "maze-binary-grid.png", 2);
+    std::cout << "Sidewinder BitfieldGrid:\n";
+    std::cout << sidewinderBitfieldGrid;
 
     NodeGrid binaryTreeNodeGrid(5, 5);
     BinaryTree::on(binaryTreeNodeGrid);
