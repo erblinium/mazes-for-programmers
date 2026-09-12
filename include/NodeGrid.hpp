@@ -37,7 +37,7 @@ public:
         {
             for (std::uint32_t column = 0; column < mColumns; ++column)
             {
-                const NodeId node = mapIndex_(row, column);
+                const NodeId node = mapIndex(row, column);
                 fn(node, row, column);
             }
         }
@@ -50,7 +50,7 @@ public:
         {
             for (std::uint32_t column = 0; column < mColumns; ++column)
             {
-                const NodeId node = mapIndex_(row, column);
+                const NodeId node = mapIndex(row, column);
                 fn(node, row, column);
             }
         }
@@ -58,15 +58,6 @@ public:
 
     template <typename F>
     void eachRow(F&& fn)
-    {
-        for (std::uint32_t row = 0; row < mRows; ++row)
-        {
-            fn(row);
-        }
-    }
-
-    template <typename F>
-    void eachRow(F&& fn) const
     {
         for (std::uint32_t row = 0; row < mRows; ++row)
         {
@@ -85,7 +76,7 @@ public:
         const auto row = row_(a);
         const auto column = column_(a) + 1;
 
-        const auto eastIndex = mapIndex_(row, column);
+        const auto eastIndex = mapIndex(row, column);
 
         linkVertices(a, eastIndex);
     }
@@ -95,24 +86,24 @@ public:
         const auto row = row_(a) + 1;
         const auto column = column_(a);
 
-        const auto southIndex = mapIndex_(row, column);
+        const auto southIndex = mapIndex(row, column);
 
         linkVertices(a, southIndex); 
     }
 
-    bool hasEastBorder(NodeId node) const
+    bool atEasternBoundary(NodeId node) const
     {
         return column_(node) == mColumns - 1;
     }
 
-    bool hasSouthBorder(NodeId node) const
+    bool atSouthernBoundary(NodeId node) const
     {
         return row_(node) == mRows - 1;
     }
 
     bool isLinkedEast(NodeId node) const
     {
-        if (hasEastBorder(node))
+        if (atEasternBoundary(node))
         {
             return false;
         }
@@ -122,7 +113,7 @@ public:
 
     bool isLinkedSouth(NodeId node) const
     {
-        if (hasSouthBorder(node))
+        if (atSouthernBoundary(node))
         {
             return false;
         }
@@ -130,13 +121,12 @@ public:
         return isLinked_(node, south_(node));
     }
 
-private:
-    NodeId mapIndex_(std::uint32_t row, std::uint32_t column) const noexcept
+    NodeId mapIndex(std::uint32_t row, std::uint32_t column) const noexcept
     {
-        // Column-major multiplier must be the number of columns.
         return static_cast<NodeId>(row) * mColumns + column;
     }
 
+private:
     std::uint32_t row_(NodeId node) const noexcept
     {
         return static_cast<std::uint32_t>(node / mColumns);

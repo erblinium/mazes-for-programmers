@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Grid.hpp"
+#include "NodeGrid.hpp"
 
 class Sidewinder
 {
@@ -44,4 +45,53 @@ class Sidewinder
                 }
             );
         }
+
+    static void on(NodeGrid& grid)
+    {
+        static std::mt19937 generator(std::random_device{}());
+        static std::uniform_int_distribution<int> distribution(0, 1);
+
+        grid.eachRow([&](std::uint32_t row)
+        {
+            std::vector<std::size_t> cells;
+
+            for (std::uint32_t column = 0;
+                column < grid.getColumns();
+                ++column)
+            {
+                const auto mapIndex = grid.mapIndex(row, column);
+                cells.push_back(mapIndex);
+
+                const bool atEasternBoundary =
+                    grid.atEasternBoundary(mapIndex);
+
+                const bool atSouthernBoundary =
+                    grid.atSouthernBoundary(mapIndex);
+
+                const bool shouldCloseOut =
+                    atEasternBoundary ||
+                    (!atSouthernBoundary && distribution(generator) == 0);
+
+                if (shouldCloseOut)
+                {
+                    std::uniform_int_distribution<std::size_t>
+                        cellsDistribution(0, cells.size() - 1);
+
+                    const auto index = cellsDistribution(generator);
+                    const auto member = cells[index];
+
+                    if (!grid.atSouthernBoundary(member))
+                    {
+                        grid.linkSouth(member);
+                    }
+
+                    cells.clear();
+                }
+                else
+                {
+                    grid.linkEast(mapIndex);
+                }
+            }
+        });
+    }
 };

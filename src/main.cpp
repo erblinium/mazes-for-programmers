@@ -28,5 +28,11 @@ int main(int argc, char* argv[])
     std::cout << "Binary Tree NodeGrid:\n";
     std::cout << binaryTreeNodeGrid;
 
+    NodeGrid sidewinderNodeGrid(5, 5);
+    Sidewinder::on(sidewinderNodeGrid);
+    //sidewinderNodeGrid.savePng(10, "maze-binary-grid.png", 2);
+    std::cout << "SideWinder Tree NodeGrid:\n";
+    std::cout << sidewinderNodeGrid;
+
     return 0;
 }
